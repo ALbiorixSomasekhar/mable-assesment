@@ -1,0 +1,44 @@
+<div class="title">FOLDER STRUCTURE MAKER</div>
+
+<button class="actionButton" (click)="showRootFolder()">Add folder to root</button>
+
+<div>
+    <ng-container *ngTemplateOutlet="folderStructureListTemplate; context:{ list: folderStructureData }"></ng-container>
+</div>
+
+<!-- tree view for folder structure data -->
+<ng-template #folderStructureListTemplate let-list="list">
+    <div *ngFor="let folderStructureItem of list; let index=index" class="folderStructureItem">
+        <img *ngIf="folderStructureItem.type === 'folder'" class="itemImage" src="assets/icons/folder-open-regular.svg"
+            alt="folder">
+        <img *ngIf="folderStructureItem.type === 'file'" class="itemImage" src="assets/icons/file-regular.svg"
+            alt="file">
+        {{folderStructureItem.name}}
+
+        <div class="actionContainer">
+            <button class="actionButton" *ngIf="folderStructureItem.type === 'folder'"
+                (click)="showItemTypeSelection = true; selectedNodeIdForNewFileOrFolder = folderStructureItem.id">Add</button>
+            <button class="actionButton" (click)="removeItem(folderStructureItem)">Remove</button>
+        </div>
+
+        <div *ngIf="folderStructureItem.children.length > 0"class="folderStructureItem">
+            <ng-container
+                *ngTemplateOutlet="folderStructureListTemplate; context:{ list: folderStructureItem.children }">
+            </ng-container>
+        </div>
+    </div>
+</ng-template>
+
+<div *ngIf="showItemTypeSelection" class="marginTop15" >
+    <button (click)="showAddFileOrFolderCard('file')">File</button>
+    <button (click)="showAddFileOrFolderCard()">Folder</button>
+</div>
+
+<div *ngIf="showFileOrFolderCard" class="fileFolderItem">
+    <img class="itemImage" [src]="itemType === 'folder' ? 'assets/icons/folder-open-regular.svg' : 'assets/icons/file-regular.svg'" alt="itemType">
+    <input type="text" [(ngModel)]="fileOrFolderName">
+    <button class="actionButton" (click)="addFileOrFolder()">Add</button>
+    <button class="actionButton" (click)="removeFileOrFolder()">Remove</button>
+</div>
+
+<textarea class="marginTop15" readonly rows="10" cols="50" >{{folderStructureData | json}}</textarea>
